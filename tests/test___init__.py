@@ -17,6 +17,8 @@ from mutagen.musepack import Musepack
 from mutagen.monkeysaudio import MonkeysAudio
 from mutagen.optimfrog import OptimFROG
 from mutagen.asf import ASF
+from mutagen.easyid3 import EasyID3
+from mutagen.id3 import ID3
 try: from os.path import devnull
 except ImportError: devnull = "/dev/null"
 
@@ -155,6 +157,14 @@ class TFile(TestCase):
             File(os.path.join("tests", "data", "silence-2.wma")), ASF))
         self.failUnless(isinstance(
             File(os.path.join("tests", "data", "silence-3.wma")), ASF))
+
+    def test_id3_option(self):
+        self.failUnless(isinstance(
+            File(os.path.join("tests", "data", "vbri.mp3"), ID3=EasyID3).tags, EasyID3))
+
+    def test_id3_default(self):
+        self.failUnless(isinstance(
+            File(os.path.join("tests", "data", "vbri.mp3")).tags, ID3))
 
     def test_id3_indicates_mp3_not_tta(self):
         header = "ID3 the rest of this is garbage"

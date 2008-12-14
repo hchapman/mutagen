@@ -155,7 +155,7 @@ class FileType(mutagen._util.DictMixin):
 
     mime = property(__get_mime)
 
-def File(filename, options=None):
+def File(filename, options=None, ID3=None):
     """Guess the type of the file and try to open it.
 
     The file type is decided by several things, such as the first 128
@@ -188,6 +188,9 @@ def File(filename, options=None):
     if not options:
         return None
 
+    if ID3 is None:
+        from mutagen.id3 import ID3
+
     fileobj = file(filename, "rb")
     try:
         header = fileobj.read(128)
@@ -201,5 +204,7 @@ def File(filename, options=None):
     results = zip(results, options)
     results.sort()
     (score, name), Kind = results[-1]
-    if score > 0: return Kind(filename)
+    if score > 0:
+        if issubclass(Kind, ID3FileType): return Kind(filename, ID3=ID3)
+        else: return Kind(filename)
     else: return None
